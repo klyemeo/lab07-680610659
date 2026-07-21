@@ -59,7 +59,7 @@ app.get("/api/students", (req: Request, res: Response) => {
      else {
       return res.json({
         success: true,
-        count: students.length,
+ 
         student : students,
       });
     }
