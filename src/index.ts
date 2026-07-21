@@ -30,7 +30,17 @@ app.get("/api/students", (req: Request, res: Response) => {
   try {
     const program = req.query.program;
     const studentId = req.query.studentId;
-    if (program) {
+    if(program && studentId){
+        let filtered_students = students.filter(
+        (student) => student.program === program && student.studentId === studentId
+      ); 
+      return res.json({
+        success: true,
+        Student: filtered_students,
+      });
+    }
+
+    if (program ) {
       let filtered_students = students.filter(
         (student) => student.program === program
       );
@@ -40,8 +50,7 @@ app.get("/api/students", (req: Request, res: Response) => {
       });
     }else if(studentId){
       let filtered_students_id = students.filter(
-        (student) => student.studentId === studentId
-      );
+        (student) => student.studentId === studentId);
       return res.json({
         success: true,
         studentId: filtered_students_id,
