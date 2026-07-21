@@ -6,7 +6,7 @@
 
 ชื่อ-สกุล : จักรราศี ทองเหลือง
 
-Vercel URL : 
+Vercel URL :  https://lab07-680610659.vercel.app/
 
 ---
 
