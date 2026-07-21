@@ -4,13 +4,13 @@ import express, { type Request, type Response } from 'express';
 import morgan from "morgan";
 
 // import database
-import { students } from '@db/db.js';
-import { type Student, type Course } from "@libs/types.js";
+import { students } from './db/db.js';
+import { type Student, type Course } from "./libs/types.js";
 import {
   zStudentDeleteBody,
   zStudentPostBody,
   zStudentPutBody,
-} from "@libs/studentValidator.js";
+} from "./libs/studentValidator.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -26,23 +26,32 @@ app.get("/", (req: Request, res: Response) => {
 
 // GET /students
 // get students (by program)
-app.get("/students", (req: Request, res: Response) => {
+app.get("/api/students", (req: Request, res: Response) => {
   try {
     const program = req.query.program;
-
+    const studentId = req.query.studentId;
     if (program) {
       let filtered_students = students.filter(
         (student) => student.program === program
       );
       return res.json({
         success: true,
-        data: filtered_students,
+        Student: filtered_students,
       });
-    } else {
+    }else if(studentId){
+      let filtered_students_id = students.filter(
+        (student) => student.studentId === studentId
+      );
+      return res.json({
+        success: true,
+        studentId: filtered_students_id,
+      });
+    }
+     else {
       return res.json({
         success: true,
         count: students.length,
-        data: students,
+        student : students,
       });
     }
   } catch (err) {
@@ -149,13 +158,56 @@ app.put("/students", (req: Request, res: Response) => {
 });
 
 // DELETE /students, body = {studentId}
-app.delete("/students", (req: Request, res: Response) => {
-  res.json({
-    message: "Implement this!"
-  })
+app.delete("/api/students", (req: Request, res: Response) => {
+
+    try{
+      const body = req.body as Student;
+
+      const result = zStudentDeleteBody.safeParse(body); // check zod
+      if (!result.success) {
+      return res.status(400).json({
+        ok:false ,
+        message: "Student Id must contain 9 characters",
+      });
+      }
+
+      const foundIndex = students.findIndex(
+      (student) => student.studentId === body.studentId);
+
+    if (foundIndex === -1) {
+      return res.status(404).json({
+        ok: false,
+        message: "Student Id does not exist",
+      });
+    }
+    students.splice(foundIndex,1);
+    return res.status(200).json({
+      ok: true,
+      message: `Student Id ${body.studentId} has been deleted` ,
+      });
+    }catch(err){
+    return res.json({
+      ok: false,
+      message: "Something is wrong, please try again",
+      error: err,
+    });
+    }
 });
 
 // GET /api/me
+app.get("/api/me", (req: Request, res: Response) => {
+  try{
+    return res.json({
+        ok: true,
+        "fullName": "Jarkrasri Thonglueng",
+        "studentId": "680610659",
+      });
+  }catch(err){
+    return res.json({
+        ok: false });
+  }
+});
+
 
 app.listen(port, async () => {
   console.log(`🚀 Server running on http://localhost:${port}`);

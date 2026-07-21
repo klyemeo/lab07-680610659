@@ -13,6 +13,6 @@
       "@libs/*": ["./src/libs/*"]
     }
   },
-  "include": ["./src/**/*"],
+  "include": ["./src/**/*", "preexam.ts"],
   "exclude": ["node_modules"]
 }
